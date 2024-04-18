@@ -85,8 +85,16 @@ def add_restaurant():
     if len(set(item)) != len(set(headers)):
         return jsonify({"message": "There are values missing on your request"}), 400
 
+    # Check that rating is inside range
     if item["rating"] < 0 or item["rating"] > 4:
         return jsonify({"message": "Invalid rating"}), 400
+
+    # Check latitude and longitude, if updated
+    if "lat" in item and (-90 <= item["lat"] < 90):
+        return jsonify({"message": "Supplied coordinates are invalid"}), 400
+
+    if "lon" in item and (-180 <= item["lon"] < 180):
+        return jsonify({"message": "Supplied coordinates are invalid"}), 400
 
     try:
         cursor.execute(
@@ -126,8 +134,15 @@ def update_restaurant(id):
 
     # TODO: Use validation library Marshmallow
     # Check that rating isn't invalid
-    if info["rating"] < 0 or info["rating"] > 4:
+    if "rating" in info and (info["rating"] < 0 or info["rating"] > 4):
         return jsonify({"message": "Rating is invalid"}), 400
+
+    # Check latitude and longitude, if updated
+    if "lat" in info and (-90 <= info["lat"] < 90):
+        return jsonify({"message": "Supplied coordinates are invalid"}), 400
+
+    if "lon" in info and (-180 <= info["lon"] < 180):
+        return jsonify({"message": "Supplied coordinates are invalid"}), 400
 
     # Check if the requested id is present in the DB
     entry = cursor.execute(
@@ -211,10 +226,12 @@ def get_statistics():
     total_rate_avg = 0
     total_rate_std = 0
 
-    # TODO: Check for correct latitude, longitude
-
-    if lat == 0 or lon == 0 or rad == 0:
+    if rad == 0:
         return jsonify({"message": "Empty values were supplied"}), 400
+
+    # Check if the coordinates are valid
+    if -90 <= lat < 90 and -180 <= lon < 180:
+        return jsonify({"message": "Supplied coordinates are invalid"}), 400
 
     cursor = get_db().cursor()
 
