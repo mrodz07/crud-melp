@@ -24,6 +24,10 @@ def parse_restaurant_data(csv_path):
             # check for correct rating range
             if int(e["rating"]) < 0 or int(e["rating"]) > 4:
                 raise Exception(f"Rating is not in the range on line {index}")
+
+            if not (-90 <= float(e["lat"]) < 90 and -180 <= float(e["lon"]) < 180):
+                raise Exception(f"Coordinates are malformed on line {index}")
+
             parsed.append(
                 [
                     e["id"],
