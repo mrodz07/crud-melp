@@ -75,15 +75,17 @@ def add_restaurant():
         return jsonify({"message": "The restaurant id is already registered"}), 400
 
 
-# @app.route("/restaurants/<int:id>", methods=["GET"])
-# def get_restaurant(id):
-#    cursor.execute("SELECT * FROM restaurants WHERE id = ?", (id,))
-#    item = cursor.fetchone()
-#    if not item:
-#        return {"message": "Item not found"}, 404
-#    return jsonify({"id": item[0], "name": item[1]})
-#
-#
+# TODO: Return the item normally and not wrapped in a list
+@app.route("/restaurants/<string:id>", methods=["GET"])
+def get_restaurant(id):
+    cursor = get_db().cursor()
+    cursor.execute("SELECT * FROM Restaurants WHERE id = ?", (id,))
+    item = cursor.fetchone()
+    if not item:
+        return jsonify({"message": "Restaurant not found"}), 404
+    return jsonify(parse_response([item], headers))
+
+
 # @app.route("/restaurants/<int:id>", methods=["PUT"])
 # def update_restaurant(id):
 #    item = request.get_json()
