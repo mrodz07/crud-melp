@@ -264,4 +264,4 @@ def get_statistics():
 
 # TODO: Implement app factory pattern for easier testing
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
