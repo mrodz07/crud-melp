@@ -8,6 +8,20 @@ with open("SCHEMA.sql") as f:
 
 cursor = connection.cursor()
 
+headers = [
+    "id",
+    "rating",
+    "name",
+    "site",
+    "email",
+    "phone",
+    "street",
+    "city",
+    "state",
+    "lat",
+    "lng",
+]
+
 
 # Loads restaurant data from a CSV with the following columns:
 # id,rating,name,site,email,phone,street,city,state,lat,lng
@@ -21,11 +35,18 @@ def parse_restaurant_data(csv_path):
         index = 0
         # e as in element
         for e in reader:
+            # Check same items as in headers
+            if len(e) != len(headers):
+                raise Exception(
+                    f"Number of items doesn't match columns on line {index}"
+                )
+
             # check for correct rating range
             if int(e["rating"]) < 0 or int(e["rating"]) > 4:
                 raise Exception(f"Rating is not in the range on line {index}")
 
-            if not (-90 <= float(e["lat"]) < 90 and -180 <= float(e["lon"]) < 180):
+            # check correct latitude and longitude
+            if not (-90 <= float(e["lat"]) < 90 and -180 <= float(e["lng"]) < 180):
                 raise Exception(f"Coordinates are malformed on line {index}")
 
             parsed.append(
