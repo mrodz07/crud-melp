@@ -110,7 +110,7 @@ def update_restaurant(id):
     cursor = conn.cursor()
 
     # TODO: Use validation library Marshmallow
-    # Check that rating hasn't changed
+    # Check that rating isn't invalid
     if info["rating"] < 0 or info["rating"] > 4:
         return jsonify({"message": "Rating is invalid"}), 400
 
@@ -156,13 +156,26 @@ def update_restaurant(id):
         return jsonify({"message": "There is an error with your request "}), 400
 
 
-#
-#
-# @app.route("/restaurants/<int:id>", methods=["DELETE"])
-# def delete_restaurant(id):
-#    cursor.execute("DELETE FROM restaurants WHERE id = ?", (id,))
-#    conn.commit()
-#    return {"message": "Item deleted successfully"}, 200
+@app.route("/restaurants/<string:id>", methods=["DELETE"])
+def delete_restaurant(id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Check if the requested id is present in the DB
+    entry = cursor.execute("SELECT * FROM Restaurants WHERE id = ?", (id,)).fetchone()
+    if not entry:
+        return jsonify({"message": "The id doesn't exist"}), 400
+
+    try:
+        cursor.execute("DELETE FROM Restaurants WHERE id = ?", (id,))
+        conn.commit()
+    except Exception as er:
+        # TODO: Add logger to flask loggers
+        logging.exception(f"Error deleting restaurant: {er}")
+        conn.close()
+        return jsonify({"message": "There was an error when deleting your value"}), 400
+
+    return {"message": "Item deleted successfully"}, 200
 
 
 if __name__ == "__main__":
