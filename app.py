@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, g
 import sqlite3
 import json
+import logging
 import csv
 
 app = Flask(__name__)
@@ -56,14 +57,24 @@ def get_restaurants():
     return jsonify(parse_response(cursor.fetchall(), headers))
 
 
-# @app.route("/restaurants", methods=["POST"])
-# def add_restaurant():
-#    item = request.get_json()
-#    cursor.execute("INSERT INTO restaurants VALUES (NULL, ?)", (item["name"],))
-#    conn.commit()
-#    return {"message": "Item added successfully"}, 201
-#
-#
+@app.route("/restaurants", methods=["POST"])
+def add_restaurant():
+    conn = get_db()
+    cursor = conn.cursor()
+    item = request.get_json()
+    try:
+        cursor.execute(
+            "INSERT INTO Restaurants VALUES (:id, :rating, :name, :site, :email, :phone, :street, :city, :state, :lat, :lng)",
+            item,
+        )
+        conn.commit()
+        return jsonify({"message": "Restaurant added successfully"}), 201
+    except sqlite3.IntegrityError as er:
+        logging.exception(f"Error adding restaurant: {er}")
+        conn.close()
+        return jsonify({"message": "The restaurant id is already registered"}), 400
+
+
 # @app.route("/restaurants/<int:id>", methods=["GET"])
 # def get_restaurant(id):
 #    cursor.execute("SELECT * FROM restaurants WHERE id = ?", (id,))
