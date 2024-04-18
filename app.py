@@ -90,10 +90,10 @@ def add_restaurant():
         return jsonify({"message": "Invalid rating"}), 400
 
     # Check latitude and longitude, if updated
-    if "lat" in item and (-90 <= item["lat"] < 90):
+    if "lat" in item and not (-90 <= item["lat"] < 90):
         return jsonify({"message": "Supplied coordinates are invalid"}), 400
 
-    if "lon" in item and (-180 <= item["lon"] < 180):
+    if "lon" in item and not (-180 <= item["lon"] < 180):
         return jsonify({"message": "Supplied coordinates are invalid"}), 400
 
     try:
@@ -230,7 +230,7 @@ def get_statistics():
         return jsonify({"message": "Empty values were supplied"}), 400
 
     # Check if the coordinates are valid
-    if -90 <= lat < 90 and -180 <= lon < 180:
+    if not (-90 <= lat < 90 and -180 <= lon < 180):
         return jsonify({"message": "Supplied coordinates are invalid"}), 400
 
     cursor = get_db().cursor()
