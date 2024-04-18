@@ -2,7 +2,8 @@ from flask import Flask, request, jsonify, g
 import sqlite3
 import json
 import logging
-import csv
+import geopy.distance
+import statistics
 
 app = Flask(__name__)
 
@@ -191,6 +192,57 @@ def delete_restaurant(id):
         return jsonify({"message": "There was an error when deleting your value"}), 400
 
     return {"message": "Item deleted successfully"}, 200
+
+
+# Returns statistics about the relation between the provided point and the restaurants int the DB
+# Expects three query params: latitude, longitude and radius
+@app.route("/restaurants/statistics", methods=["GET"])
+def get_statistics():
+    args = request.args
+    data = []
+    lat = args.get("latitude", default=0, type=float)
+    lon = args.get("longitude", default=0, type=float)
+    rad = args.get("radius", default=0, type=int)
+    main_coords = (lat, lon)
+    matching_points = []
+    matching_ratings = []
+
+    total_point_count = 0
+    total_rate_avg = 0
+    total_rate_std = 0
+
+    # TODO: Check for correct latitude, longitude
+
+    if lat == 0 or lon == 0 or rad == 0:
+        return jsonify({"message": "Empty values were supplied"}), 400
+
+    cursor = get_db().cursor()
+
+    try:
+        data = cursor.execute("SELECT id, lat, lng, rating FROM Restaurants").fetchall()
+    except Exception as er:
+        # TODO: Add logger to flask loggers
+        logging.exception(f"Error quering restaurant coordinates: {er}")
+
+    # Remember that the indices mean:
+    # 0: id
+    # 1: lat
+    # 2: lng
+    # 3: rating
+    for row in data:
+        current_coords = (row[1], row[2])
+        if geopy.distance.geodesic(main_coords, current_coords).m <= rad:
+            matching_points.append(row)
+            total_rate_avg += row[3]
+            matching_ratings.append(row[3])
+
+    total_rate_std = statistics.stdev(matching_ratings)
+    total_point_count = len(matching_points)
+    total_rate_avg = total_rate_avg / len(matching_points)
+
+    return jsonify(
+        {"count": total_point_count, "avg": total_rate_avg, "std": total_rate_std}
+    )
 
 
 if __name__ == "__main__":
