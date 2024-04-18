@@ -76,6 +76,17 @@ def add_restaurant():
     conn = get_db()
     cursor = conn.cursor()
     item = request.get_json()
+
+    if not item:
+        return jsonify({"message": "Can't register empty value"}), 400
+
+    # Check that provided values are enough for all columns
+    if len(set(item)) != len(set(headers)):
+        return jsonify({"message": "There are values missing on your request"}), 400
+
+    if item["rating"] < 0 or item["rating"] > 4:
+        return jsonify({"message": "Invalid rating"}), 400
+
     try:
         cursor.execute(
             "INSERT INTO Restaurants VALUES (:id, :rating, :name, :site, :email, :phone, :street, :city, :state, :lat, :lng)",
@@ -108,6 +119,9 @@ def update_restaurant(id):
     info = request.get_json()
     conn = get_db()
     cursor = conn.cursor()
+
+    if not info:
+        return jsonify({"message": "Can't update empty values"}), 400
 
     # TODO: Use validation library Marshmallow
     # Check that rating isn't invalid
@@ -161,6 +175,7 @@ def delete_restaurant(id):
     conn = get_db()
     cursor = conn.cursor()
 
+    # TODO: Return clean DB response
     # Check if the requested id is present in the DB
     entry = cursor.execute("SELECT * FROM Restaurants WHERE id = ?", (id,)).fetchone()
     if not entry:
