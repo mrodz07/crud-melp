@@ -1,0 +1,521 @@
+{
+	"info": {
+		"_postman_id": "066fb3f1-293a-4b1e-b88b-6ab787372734",
+		"name": "MELP RESTAURANT CRUD API",
+		"description": "## Description\n\nGeneral API for Melp corporation. It manages the companies' restaurants and provides statistics for their services.\n\n## Setup\n\nIn order to run this application the following needs to be done:\n\n1. Clone the project's repository and set it to the working directory: [<code>https://github.com/mrodz07/crud-melp</code>](https://github.com/mrodz07/crud-melp)\n    \n2. Create a python virtual environment with: `venv`\n    \n3. Install the required files with: `pip install -r requirements.txt`\n    \n4. Initialize the database by entering the command: `python db_init.py`\n    \n5. Run the program using the development server as follows: `flask run`\n    \n\n## **Endpoints**\n\n`/restaurants` The endpoint that provides the user with restaurant information\n\n- `GET`: Returns all available restaurants in the company. Adding an ID at the end of the endpoint returns a specific restaurant.\n- `POST`: Adds a new restaurant to the DB.\n- `PUT`: Updates the restaurant with the specified ID, appended at the end of the endpoint\n- `DELETE`: Deletes the restaurant with the specified ID, appended at the end of the endpoint\n    \n\n`/restaurants/statistics` The endpoint that provides the user with statistics regarding the various restaurants.\n\n- `GET`: Three query parameters must be specified: `longitude`, `latitude` and `radius`. It will return the restaurants that are covered by the circle drawn using the `longitude` and `latitude` as its center and radius as its `radius`. It also returns the standard deviation and mean of the reviews of the restaurants contained by the circle.\n    \n\nMore information about each endpoint is provided in their pages.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34384351"
+	},
+	"item": [
+		{
+			"name": "Showcase",
+			"item": [
+				{
+					"name": "Read all restaurants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/restaurants",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants"
+							]
+						},
+						"description": "### Description\n\nSending the GET method to this endpoint returns all saved restaurants on the application.\n\n### Response codes\n\n200: All restaurants on the application were sent correctly\n\n- If there are no restaurants in the DB the API will still send an OK code\n    \n\n### Response Body\n\nA list of all restaurants and their related values saved in the DB\n\n``` json\n[\n    {\n        \"id\": \"851f799f-0852-439e-b9b2-df92c43e7672\",\n        \"rating\": 1,\n        \"name\": \"Barajas, Bahena and Kano\",\n        \"site\": \"https://federico.com\",\n        \"email\": \"Anita_Mata71@hotmail.com\",\n        \"phone\": \"534 814 204\",\n        \"street\": \"82247 Mariano Entrada\",\n        \"city\": \"Mérida Alfredotown\",\n        \"state\": \"Durango\",\n        \"lat\": 19.4400570537131,\n        \"lng\": -99.1270470974249\n    },\n]\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Read a single resturant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/restaurants/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants",
+								"{{id}}"
+							]
+						},
+						"description": "### Description\n\nSending the GET method to this endpoint, along with a string representing the ID of a restaurant, returns all saved data about the restaurant.\n\n### Response codes\n\n200: The restaurant was found and the info was sent\n\n400: The restaurant wasn't found and an error was sent\n\n### Response Body\n\nA single JSON object containing the requested values\n\n``` json\n{\n        \"id\": \"851f799f-0852-439e-b9b2-df92c43e7672\",\n        \"rating\": 1,\n        \"name\": \"Barajas, Bahena and Kano\",\n        \"site\": \"https://federico.com\",\n        \"email\": \"Anita_Mata71@hotmail.com\",\n        \"phone\": \"534 814 204\",\n        \"street\": \"82247 Mariano Entrada\",\n        \"city\": \"Mérida Alfredotown\",\n        \"state\": \"Durango\",\n        \"lat\": 19.4400570537131,\n        \"lng\": -99.1270470974249\n }\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Update restaurant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful PUT request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// You can put 1 or more of 11 values: \"id\", \"rating\", \"name\", \"site\", \"email\", \"phone\", \"street\", \"city\", \"state\", \"lat\",\"lng\"\n{\n\t\"name\": \"Mario Rodríguez\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/restaurants/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants",
+								"{{id}}"
+							]
+						},
+						"description": "### Description\n\nSending the PUT method to this endpoint, along with a string representing the ID of a restaurant and a JSON object with the values to change, updates the requested restaurant.\n\n### Response codes\n\n200: The restaurant was found and the info was updated\n\n400: The restaurant wasn't found and an error was not updated or an error occured.\n\n500: The server encountered a problem while processing the request\n\n### Request Body\n\nThe body of the request can have the following values:\n\n`\"id\"`: A string representing the ID of a restaurant.\n\n`\"rating\"`: The restaurant´s rating. Can be a integer number between 1 and 4.\n\n`\"name\"`: A string representation of the name of the restaurant.\n\n`\"site\":` A string of restaurant's site.\n\n`\"email\"`: A string representing the email of the owner.\n\n`\"phone\":` A string of the phone number of the owner\n\n`\"street\"`: A string containing the physical location of the restaurant.\n\n`\"city\"`: A string representing the city where the restaurant is located\n\n`\"state\"`: A string representing the state where the restaurant is located.\n\n`\"lat\"`: A float number representing the latitude where the restaurant is located. Can be a number between -90 and 90.\n\n`\"lng\"`: A float number representing the longitude where the restaurant is located. Can be a number between -180 and 180.\n\n### Response Body\n\nA single JSON object containing a success message or an error\n\n``` json\n{\n    \"message\": \"The Restaurant was successfully updated\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete restaurant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful DELETE request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/restaurants/{{del_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants",
+								"{{del_id}}"
+							]
+						},
+						"description": "### Description\n\nSending the DELETE method to this endpoint, alongside the ID of a resturant will delete the restaurant from the database.\n\n### Response codes\n\n200: The restaurant was found and was correctly deleted\n\n400: The restaurant wasn't found and an error was sent.\n\n500: The server encountered a problem while processing the request\n\n### Response Body\n\nA single JSON object containing a success message or an error\n\n``` json\n{\n    \"message\": \"The Restaurant was successfully updated\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get statistics from restaurants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/restaurants/statistics?latitude=19.4400570537131&longitude=-99.1270470974249&radius=100",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants",
+								"statistics"
+							],
+							"query": [
+								{
+									"key": "latitude",
+									"value": "19.4400570537131"
+								},
+								{
+									"key": "longitude",
+									"value": "-99.1270470974249"
+								},
+								{
+									"key": "radius",
+									"value": "100"
+								}
+							]
+						},
+						"description": "### Description\n\nSending the PUT method to this endpoint, along with a string representing the ID of a restaurant and a JSON object with the values to change, updates the requested restaurant.\n\n### Response codes\n\n200: The restaurant was found and the info was sent.\n\n400: Incorrect information was sent and the request couldn't be processed.\n\n### Query parameters\n\nThe body of the request can have the following values:\n\n`\"latitude\"`: A float number that simbolizes the latitude where the restaurant is located. It must be a number between -90 and 90.\n\n`\"longitude\"`: A float number that simbolizes the longitud where the restaurant is located. It must be a number between -180 and 180.\n\n`\"radius\"`: A integer number, in meters, representing the radius in which the statistics will be measured.\n\n### Response Body\n\nA single JSON object containing the average (avg), places matched (count) and standard deviation (std) of specified restaurant.\n\n``` json\n{\n    \"avg\": 0.8,\n    \"count\": 5,\n    \"std\": 1.3038404810405297\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Create new resturant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"10101010-0852-439e-b9b2-df92c43e7672\",\n    \"rating\": 4,\n    \"name\": \"John Doe's Grill\",\n    \"site\": \"https://jdgrill.com\",\n    \"email\": \"johndoe@mail.com\",\n    \"phone\": \"1234 5678 910\",\n    \"street\": \"1234 Hola Adios\",\n    \"city\": \"Mexico\",\n    \"state\": \"Mexico\",\n    \"lat\": 20.4400570537131,\n    \"lng\": -98.1270470974249\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/restaurants",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants"
+							]
+						},
+						"description": "### Description\n\nSending the POST method to this endpoint, alongside a JSON object with information about a restaurant, creates it in the application.\n\n### Response codes\n\n200: The restaurant was successfully created.\n\n400: The information sent relating to the restaurant was malformed.\n\n500: The server encountered a problem while processing the request\n\n### Request Body\n\nThe body of the request can have the following values:\n\n`\"id\"`: A string representing the ID of a restaurant.\n\n`\"rating\"`: The restaurant´s rating. Can be a integer number between 1 and 4.\n\n`\"name\"`: A string representation of the name of the restaurant.\n\n`\"site\":` A string of restaurant's site.\n\n`\"email\"`: A string representing the email of the owner.\n\n`\"phone\":` A string of the phone number of the owner\n\n`\"street\"`: A string containing the physical location of the restaurant.\n\n`\"city\"`: A string representing the city where the restaurant is located\n\n`\"state\"`: A string representing the state where the restaurant is located.\n\n`\"lat\"`: A float number representing the latitude where the restaurant is located. Can be a number between -90 and 90.\n\n`\"lng\"`: A float number representing the longitude where the restaurant is located. Can be a number between -180 and 180.\n\n### Response Body\n\nA single JSON object containing a success message or an error\n\n``` json\n{\n    \"message\": \"Restaurant added successfully\"\n}\n\n ```"
+					},
+					"response": []
+				}
+			],
+			"description": "Shows the regular responses of the program, operating on optimal conditions."
+		},
+		{
+			"name": "Tests",
+			"item": [
+				{
+					"name": "Update restaurant with an invalid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400. Data is malformed\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// You can put 1 or more of 11 values: \"id\", \"rating\", \"name\", \"site\", \"email\", \"phone\", \"street\", \"city\", \"state\", \"lat\",\"lng\"\n{\n\t\"name\": \"Mario Rodríguez\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/restaurants/non_existing_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants",
+								"non_existing_id"
+							]
+						},
+						"description": "### Description\n\nThis test shows the program output when the ID of the restaurant is invalid."
+					},
+					"response": []
+				},
+				{
+					"name": "Request a non existing restaurant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404. Requested object was not found\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/restaurants/invalid_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants",
+								"invalid_id"
+							]
+						},
+						"description": "## Description\n\nThis test shows what happens when an invalid ID is given to the endpoint.\n\nIt returns a message indicating that the restaurant wasn't found with a 404 error."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete non existing restaurant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/restaurants/{{del_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants",
+								"{{del_id}}"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						},
+						"description": "### Description\n\nThis test shows what happens when an unexisting restaurant is deleted.\n\nAn error is sent indicating that the ID wasn't found."
+					},
+					"response": []
+				},
+				{
+					"name": "Create new resturant with an incorrect rating",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400. A field is invalid\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"11111111-0852-439e-b9b2-df92c43e7672\",\n    \"rating\": 5,\n    \"name\": \"John Doe's Grill\",\n    \"site\": \"https://jdgrill.com\",\n    \"email\": \"johndoe@mail.com\",\n    \"phone\": \"1234 5678 910\",\n    \"street\": \"1234 Hola Adios\",\n    \"city\": \"Mexico\",\n    \"state\": \"Mexico\",\n    \"lat\": 20.4400570537131,\n    \"lng\": -98.1270470974249\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/restaurants",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants"
+							]
+						},
+						"description": "### Description\n\nThis test shows what happens when a faulty value is passed to this endpoint.\n\nThe error signals the invalid parameter passed."
+					},
+					"response": []
+				},
+				{
+					"name": "Statistics with incorrect coordinates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/restaurants/statistics?latitude=19.4400570537131&longitude=-99.1270470974249&radius=100",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"restaurants",
+								"statistics"
+							],
+							"query": [
+								{
+									"key": "latitude",
+									"value": "19.4400570537131"
+								},
+								{
+									"key": "longitude",
+									"value": "-99.1270470974249"
+								},
+								{
+									"key": "radius",
+									"value": "100"
+								}
+							]
+						},
+						"description": "### Description\n\nThis test shows what happens when the latitude and longitude is incorrect in the request.\n\nThe error signals the invalid parameter passed."
+					},
+					"response": []
+				}
+			],
+			"description": "Shows the handling of edge cases throughout the endpoints.\n\nThese are not a thorough tests, but a showcase of the error handling of the application.\n\nA more adequate tool to do better, and automated test, would be Pytest."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://crud-melp.onrender.com"
+		},
+		{
+			"key": "id",
+			"value": "851f799f-0852-439e-b9b2-df92c43e7672",
+			"type": "string"
+		},
+		{
+			"key": "del_id",
+			"value": "4e17896d-a26f-44ae-a8a4-5fbd5cde79b0",
+			"type": "string"
+		}
+	]
+}
