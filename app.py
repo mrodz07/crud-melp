@@ -69,7 +69,7 @@ def update_dict_values(lst, new_dic):
 def get_restaurants():
     cursor = get_db().cursor()
     cursor.execute("SELECT * FROM Restaurants")
-    return jsonify(parse_response(cursor.fetchall(), headers))
+    return parse_response(cursor.fetchall(), headers)
 
 
 @app.route("/restaurants", methods=["POST"])
@@ -120,7 +120,7 @@ def get_restaurant(id):
     item = cursor.fetchone()
     if not item:
         return jsonify({"message": "Restaurant not found"}), 404
-    return jsonify(parse_response([item], headers))
+    return parse_response([item], headers)
 
 
 @app.route("/restaurants/<string:id>", methods=["PUT"])
